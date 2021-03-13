@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
@@ -6,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.IO;
 
 namespace WindowsFormsApp1
 {
@@ -72,6 +74,16 @@ namespace WindowsFormsApp1
 
             if (HWndConsole == IntPtr.Zero)
             {
+                var key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts");
+                if (key.GetValue("Cascadia Code Regular (TrueType)") == null)
+                {
+                    key.SetValue("Cascadia Code Regular (TrueType)", Path.GetFullPath(Path.Combine("wt", "Cascadia.ttf")));
+                }
+                if (key.GetValue("Cascadia Mono Regular (TrueType)") == null)
+                {
+                    key.SetValue("Cascadia Mono Regular (TrueType)", Path.GetFullPath(Path.Combine("wt", "CascadiaMono.ttf")));
+                }
+
                 var process = new Process();
                 process.StartInfo.FileName = @"wt\WindowsTerminal.exe";
                 process.StartInfo.Arguments = "-f -d . ethminer-gui.exe start";
