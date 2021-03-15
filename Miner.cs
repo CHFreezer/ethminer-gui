@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EthminerGUI
 {
@@ -184,7 +180,8 @@ namespace EthminerGUI
                            $"-coin eth {args.Trim()}";
                 case Name.NBMiner:
                     return $"-a ethash {getPool()}{getWallet()}" +
-                           $"{getPool2()}{getWallet2()}{args.Trim()}";
+                           $"{getPool2()}{getWallet2()}" +
+                           $"--no-watchdog {args.Trim()}";
                 default:
                     throw new Exception("不支持的挖矿内核");
             }

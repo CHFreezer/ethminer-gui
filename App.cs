@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -104,7 +103,6 @@ namespace EthminerGUI
             }
             catch { }
             process?.Dispose();
-            process = null;
 
             if (mining)
             {
@@ -157,13 +155,7 @@ namespace EthminerGUI
             }
             finally
             {
-                try
-                {
-                    process.Kill();
-                }
-                catch { }
                 process.Dispose();
-                process = null;
 
                 Console.OutputEncoding = Encoding.UTF8;
 
