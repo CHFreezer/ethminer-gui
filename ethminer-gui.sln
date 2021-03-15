@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31105.61
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApp1", "WindowsFormsApp1.csproj", "{AFC4DB82-77CD-463E-8CC0-5E17B0E083FE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ethminer-gui", "ethminer-gui.csproj", "{AFC4DB82-77CD-463E-8CC0-5E17B0E083FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
