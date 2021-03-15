@@ -17,6 +17,8 @@ namespace EthminerGUI
         static extern IntPtr GetConsoleWindow();
         [DllImport("user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        [DllImport("gdi32.dll")]
+        static extern int AddFontResource(string Arg1);
 
         public static IntPtr HWndConsole { get; set; }
 
@@ -81,11 +83,13 @@ namespace EthminerGUI
                 {
                     Directory.CreateDirectory(fontPath);
                     File.Copy(Path.Combine("wt", "Cascadia.ttf"), cascadiaPath);
+                    AddFontResource(cascadiaPath);
                 }
                 if (!File.Exists(CascadiaMonoPath))
                 {
                     Directory.CreateDirectory(fontPath);
                     File.Copy(Path.Combine("wt", "CascadiaMono.ttf"), CascadiaMonoPath);
+                    AddFontResource(CascadiaMonoPath);
                 }
                 var key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts");
                 if (key.GetValue("Cascadia Code Regular (TrueType)") == null)
@@ -124,12 +128,11 @@ namespace EthminerGUI
                     {
                         if (process.MainWindowTitle != title)
                         {
+                            ShowWindow(HWndConsole, 9);
                             break;
                         }
                     }
                 }
-
-                ShowWindow(process.MainWindowHandle, 1);
             #endregion
 
             #region TCP发送hWnd指针
@@ -140,7 +143,7 @@ namespace EthminerGUI
 
                 sender.Connect(endPoint);
                 sender.Send(Encoding.ASCII.GetBytes("ethminer-gui"));
-                sender.Send(BitConverter.GetBytes((int)process.MainWindowHandle));
+                sender.Send(BitConverter.GetBytes((int)HWndConsole));
                 sender.Close();
             #endregion
             }
