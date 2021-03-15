@@ -51,14 +51,7 @@ namespace EthminerGUI
             }
             comboBox_miners.Items.AddRange(Configuration.GetMinerNames());
             comboBox_miners.SelectedIndex = Configuration.SelectedIndex;
-
-            textBox_pool.Text = Configuration.CurrentMiner.pool;
-            textBox_pool2.Text = Configuration.CurrentMiner.pool2;
-            textBox_wallet.Text = Configuration.CurrentMiner.wallet;
-            textBox_wallet2.Text = Configuration.CurrentMiner.wallet2;
-            textBox_password.Text = Configuration.CurrentMiner.passwd;
-            textBox_password2.Text = Configuration.CurrentMiner.passwd2;
-            textBox_args.Text = Configuration.CurrentMiner.args;
+            updateComponent();
         }
 
         private void App_FormClosing(object sender, FormClosingEventArgs e)
@@ -168,6 +161,17 @@ namespace EthminerGUI
             }
         }
 
+        void updateComponent()
+        {
+            textBox_pool.Text = Configuration.CurrentMiner.pool;
+            textBox_pool2.Text = Configuration.CurrentMiner.pool2;
+            textBox_wallet.Text = Configuration.CurrentMiner.wallet;
+            textBox_wallet2.Text = Configuration.CurrentMiner.wallet2;
+            textBox_password.Text = Configuration.CurrentMiner.passwd;
+            textBox_password2.Text = Configuration.CurrentMiner.passwd2;
+            textBox_args.Text = Configuration.CurrentMiner.args;
+        }
+
         private void textBox_localMachineName_TextChanged(object sender, EventArgs e)
         {
             Configuration.LocalMachineName = textBox_localMachineName.Text;
@@ -177,6 +181,7 @@ namespace EthminerGUI
         private void comboBox_miners_SelectedIndexChanged(object sender, EventArgs e)
         {
             Configuration.SelectedIndex = comboBox_miners.SelectedIndex;
+            updateComponent();
         }
     }
 }
