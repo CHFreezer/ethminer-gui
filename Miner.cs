@@ -181,7 +181,7 @@ namespace EthminerGUI
                 case Name.PhoenixMiner:
                     return $"{getPool()}{getWallet()}{getWorker()}{getPassword()}" +
                            $"{getPool2()}{getWallet2()}{getWorker2()}{getPassword2()}" +
-                           $"-coin eth -log 0 {args.Trim()}";
+                           $"-coin eth -log 0 -wdog 0 -rmode 0 {args.Trim()}";
                 case Name.NBMiner:
                     return $"-a ethash {getPool()}{getWallet()}" +
                            $"{getPool2()}{getWallet2()}" +
