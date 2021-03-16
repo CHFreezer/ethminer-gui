@@ -28,7 +28,7 @@ namespace EthminerGUI
         [STAThread]
         static void Main(string[] args)
         {
-#if !DEBUG
+#if !DEBUG && !WITHOUTWT
             if (args.Length > 0 && args[0] == "start")
             {
             #region TCP监听hWnd指针
@@ -156,8 +156,8 @@ namespace EthminerGUI
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new App());
-#if !DEBUG
-            }
+#if !DEBUG && !WITHOUTWT
+        }
 #endif
         }
     }

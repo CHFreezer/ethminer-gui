@@ -38,7 +38,7 @@ namespace EthminerGUI
 
             return (string.IsNullOrWhiteSpace(protocol) ? "" : $"{protocol}://") +
                    @wallet.Trim() +
-                   (string.IsNullOrWhiteSpace(App.Configuration.LocalMachineName) ? "" : $".{App.Configuration.LocalMachineName.Trim()}") +
+                   (string.IsNullOrWhiteSpace(App.Configuration.LocalMachineName) ? "" : $".{App.Configuration.LocalMachineName}") +
                    (string.IsNullOrWhiteSpace(@passwd) ? "" : $":{@passwd.Trim()}") +
                    $"@{url}";
         }
@@ -46,7 +46,7 @@ namespace EthminerGUI
         string getNbminerUser(string @wallet, string @passwd)
         {
             return @wallet.Trim() +
-                   (string.IsNullOrWhiteSpace(App.Configuration.LocalMachineName) ? "" : $".{App.Configuration.LocalMachineName.Trim()}") +
+                   (string.IsNullOrWhiteSpace(App.Configuration.LocalMachineName) ? "" : $".{App.Configuration.LocalMachineName}") +
                    (string.IsNullOrWhiteSpace(@passwd) ? "" : $":{@passwd.Trim()}");
         }
 
@@ -57,9 +57,9 @@ namespace EthminerGUI
                 case Name.Ethminer:
                     return $"-P {getEthminerPool(pool, wallet, passwd)} ";
                 case Name.PhoenixMiner:
-                    return $"-pool {pool} ";
+                    return $"-pool {pool.Trim()} ";
                 case Name.NBMiner:
-                    return $"-o {pool} ";
+                    return $"-o {pool.Trim()} ";
                 default:
                     return "";
             }
@@ -69,11 +69,12 @@ namespace EthminerGUI
             switch (name)
             {
                 case Name.Ethminer:
-                    return $"-P {getEthminerPool(pool2, wallet2, passwd2)} ";
+                    return (string.IsNullOrWhiteSpace(pool2) || string.IsNullOrWhiteSpace(wallet2)) ?
+                           "" : $"-P {getEthminerPool(pool2, wallet2, passwd2)} ";
                 case Name.PhoenixMiner:
-                    return $"-pool2 {pool2} ";
+                    return string.IsNullOrWhiteSpace(pool2) ? "" : $"-pool2 {pool2.Trim()} ";
                 case Name.NBMiner:
-                    return $"-o1 {pool2} ";
+                    return string.IsNullOrWhiteSpace(pool2) ? "" : $"-o1 {pool2.Trim()} ";
                 default:
                     return "";
             }
@@ -86,7 +87,7 @@ namespace EthminerGUI
                 case Name.Ethminer:
                     return "";
                 case Name.PhoenixMiner:
-                    return $"-wal {wallet} ";
+                    return $"-wal {wallet.Trim()} ";
                 case Name.NBMiner:
                     return $"-u {getNbminerUser(wallet, passwd)} ";
                 default:
@@ -100,9 +101,11 @@ namespace EthminerGUI
                 case Name.Ethminer:
                     return "";
                 case Name.PhoenixMiner:
-                    return $"-wal2 {wallet} ";
+                    return (string.IsNullOrWhiteSpace(pool2) || string.IsNullOrWhiteSpace(wallet2)) ?
+                           "" : $"-wal2 {wallet.Trim()} ";
                 case Name.NBMiner:
-                    return $"-u1 {getNbminerUser(wallet2, passwd2)} ";
+                    return (string.IsNullOrWhiteSpace(pool2) || string.IsNullOrWhiteSpace(wallet2)) ?
+                           "" : $"-u1 {getNbminerUser(wallet2, passwd2)} ";
                 default:
                     return "";
             }
@@ -116,7 +119,7 @@ namespace EthminerGUI
                     return "";
                 case Name.PhoenixMiner:
                     return string.IsNullOrWhiteSpace(App.Configuration.LocalMachineName) ?
-                        "" : $"-worker {App.Configuration.LocalMachineName.Trim()} ";
+                        "" : $"-worker {App.Configuration.LocalMachineName} ";
                 case Name.NBMiner:
                     return "";
                 default:
@@ -130,8 +133,8 @@ namespace EthminerGUI
                 case Name.Ethminer:
                     return "";
                 case Name.PhoenixMiner:
-                    return string.IsNullOrWhiteSpace(App.Configuration.LocalMachineName) ?
-                        "" : $"-worker2 {App.Configuration.LocalMachineName.Trim()} ";
+                    return (string.IsNullOrWhiteSpace(pool2) || string.IsNullOrWhiteSpace(wallet2) || string.IsNullOrWhiteSpace(App.Configuration.LocalMachineName)) ?
+                        "" : $"-worker2 {App.Configuration.LocalMachineName} ";
                 case Name.NBMiner:
                     return "";
                 default:
@@ -146,7 +149,7 @@ namespace EthminerGUI
                 case Name.Ethminer:
                     return "";
                 case Name.PhoenixMiner:
-                    return string.IsNullOrWhiteSpace(passwd) ? "" : $"-pass {passwd} ";
+                    return string.IsNullOrWhiteSpace(passwd) ? "" : $"-pass {passwd.Trim()} ";
                 case Name.NBMiner:
                     return "";
                 default:
@@ -160,7 +163,8 @@ namespace EthminerGUI
                 case Name.Ethminer:
                     return "";
                 case Name.PhoenixMiner:
-                    return string.IsNullOrWhiteSpace(passwd2) ? "" : $"-pass2 {passwd2} ";
+                    return (string.IsNullOrWhiteSpace(pool2) || string.IsNullOrWhiteSpace(wallet2) || string.IsNullOrWhiteSpace(passwd2)) ?
+                           "" : $"-pass2 {passwd2.Trim()} ";
                 case Name.NBMiner:
                     return "";
                 default:
@@ -177,7 +181,7 @@ namespace EthminerGUI
                 case Name.PhoenixMiner:
                     return $"{getPool()}{getWallet()}{getWorker()}{getPassword()}" +
                            $"{getPool2()}{getWallet2()}{getWorker2()}{getPassword2()}" +
-                           $"-coin eth {args.Trim()}";
+                           $"-coin eth -log 0 {args.Trim()}";
                 case Name.NBMiner:
                     return $"-a ethash {getPool()}{getWallet()}" +
                            $"{getPool2()}{getWallet2()}" +

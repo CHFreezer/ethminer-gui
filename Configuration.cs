@@ -14,7 +14,7 @@ namespace EthminerGUI
             get => localMachineName;
             set
             {
-                localMachineName = Regex.Replace(value, @"[^a-zA-Z0-9-_]", string.Empty);
+                localMachineName = Regex.Replace(value, @"[^a-zA-Z0-9-_]", string.Empty).Trim();
             }
         }
         public int SelectedIndex { get; set; }
