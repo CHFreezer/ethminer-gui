@@ -3,8 +3,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Timer = System.Timers.Timer;
 
 namespace EthminerGUI
 {
@@ -90,36 +92,27 @@ namespace EthminerGUI
 
         private void button_mining_Click(object sender, EventArgs e)
         {
-            try
-            {
-                process?.Kill();
-            }
-            catch { }
-            process?.Dispose();
-
             if (mining)
             {
                 mining = false;
 
                 button_mining.Text = "挖矿";
+
+                try
+                {
+                    process?.Kill();
+                }
+                catch { }
             }
             else
             {
                 Console.WriteLine();
                 Logger.cyan("开始挖矿", "\n");
 
-                Task.Run(() => RunProcess());
-
                 mining = true;
 
                 button_mining.Text = "停止";
-            }
-        }
 
-        void RunProcess()
-        {
-            try
-            {
                 var miner = Configuration.CurrentMiner;
                 miner.pool = textBox_pool.Text;
                 miner.pool2 = textBox_pool2.Text;
@@ -131,33 +124,79 @@ namespace EthminerGUI
                 Configuration.CurrentMiner = miner;
                 Configuration.Save();
 
-                process = new Process();
-                Logger.white("内核：", Configuration.CurrentMiner.name.ToString());
-                var args = Configuration.CurrentMiner.GetFullArgs();
-                Logger.white("execute:", Configuration.CurrentMiner.exePath, args);
-                process.StartInfo.FileName = Configuration.CurrentMiner.exePath;
-                process.StartInfo.Arguments = args;
-                process.StartInfo.UseShellExecute = false;
-                process.Start();
-
-                process.WaitForExit();
+                Task.Run(RunProcess);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            finally
-            {
-                process.Dispose();
+        }
 
-                Console.OutputEncoding = Encoding.UTF8;
+        void RunProcess()
+        {
+            var retryCount = 0;
+            var timer = new Timer(60000);
+            timer.AutoReset = false;
+            timer.Elapsed += (obj, e) =>
+            {
+                retryCount = 0;
+            };
+
+            while (mining)
+            {
+                try
+                {
+                    process = new Process();
+                    Logger.white("内核：", Configuration.CurrentMiner.name.ToString());
+                    var args = Configuration.CurrentMiner.GetFullArgs();
+                    Logger.white("execute:", Configuration.CurrentMiner.exePath, args);
+                    process.StartInfo.FileName = Configuration.CurrentMiner.exePath;
+                    process.StartInfo.Arguments = args;
+                    process.StartInfo.UseShellExecute = false;
+                    process.Start();
+
+                    timer.Start();
+
+                    process.WaitForExit();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+                finally
+                {
+                    process.Dispose();
+
+                    Console.OutputEncoding = Encoding.UTF8;
+                }
+
+                timer.Stop();
+
+                if (!mining)
+                {
+                    timer.Dispose();
+
+                    Console.WriteLine();
+                    Logger.magenta("已停止", "\n");
+
+                    break;
+                }
+                if (retryCount >= 5)
+                {
+                    timer.Dispose();
+
+                    mining = false;
+
+                    button_mining.Invoke(new Action(() => { button_mining.Text = "挖矿"; }));
+
+                    Console.WriteLine();
+                    Logger.red("超过最大内核重启次数，退出", "\n");
+
+                    break;
+                }
 
                 Console.WriteLine();
-                Logger.magenta("已停止", "\n");
+                Logger.magenta("发现内核进程退出，5秒后重启", "\n");
 
-                mining = false;
+                Thread.Sleep(5000);
 
-                button_mining.Invoke(new Action(() => { button_mining.Text = "挖矿"; }));
+                retryCount++;
             }
         }
 
