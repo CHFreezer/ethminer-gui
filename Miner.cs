@@ -102,7 +102,7 @@ namespace EthminerGUI
                     return "";
                 case Name.PhoenixMiner:
                     return (string.IsNullOrWhiteSpace(pool2) || string.IsNullOrWhiteSpace(wallet2)) ?
-                           "" : $"-wal2 {wallet.Trim()} ";
+                           "" : $"-wal2 {wallet2.Trim()} ";
                 case Name.NBMiner:
                     return (string.IsNullOrWhiteSpace(pool2) || string.IsNullOrWhiteSpace(wallet2)) ?
                            "" : $"-u1 {getNbminerUser(wallet2, passwd2)} ";
