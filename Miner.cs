@@ -8,7 +8,8 @@ namespace EthminerGUI
         {
             Ethminer = 0,
             PhoenixMiner,
-            NBMiner
+            NBMiner,
+            GMiner
         }
 
         public Name name;
@@ -50,6 +51,12 @@ namespace EthminerGUI
                    (string.IsNullOrWhiteSpace(@passwd) ? "" : $":{@passwd.Trim()}");
         }
 
+        string getGminerUser(string @wallet)
+        {
+            return @wallet.Trim() +
+                   (string.IsNullOrWhiteSpace(App.Configuration.LocalMachineName) ? "" : $".{App.Configuration.LocalMachineName}");
+        }
+
         string getPool()
         {
             switch (name)
@@ -60,6 +67,8 @@ namespace EthminerGUI
                     return $"-pool {pool.Trim()} ";
                 case Name.NBMiner:
                     return $"-o {pool.Trim()} ";
+                case Name.GMiner:
+                    return $"--server {pool.Trim()} ";
                 default:
                     return "";
             }
@@ -75,6 +84,8 @@ namespace EthminerGUI
                     return string.IsNullOrWhiteSpace(pool2) ? "" : $"-pool2 {pool2.Trim()} ";
                 case Name.NBMiner:
                     return string.IsNullOrWhiteSpace(pool2) ? "" : $"-o1 {pool2.Trim()} ";
+                case Name.GMiner:
+                    return string.IsNullOrWhiteSpace(pool2) ? "" : $"--server {pool2.Trim()} ";
                 default:
                     return "";
             }
@@ -90,6 +101,8 @@ namespace EthminerGUI
                     return $"-wal {wallet.Trim()} ";
                 case Name.NBMiner:
                     return $"-u {getNbminerUser(wallet, passwd)} ";
+                case Name.GMiner:
+                    return $"--user {getGminerUser(wallet)} ";
                 default:
                     return "";
             }
@@ -106,6 +119,9 @@ namespace EthminerGUI
                 case Name.NBMiner:
                     return (string.IsNullOrWhiteSpace(pool2) || string.IsNullOrWhiteSpace(wallet2)) ?
                            "" : $"-u1 {getNbminerUser(wallet2, passwd2)} ";
+                case Name.GMiner:
+                    return (string.IsNullOrWhiteSpace(pool2) || string.IsNullOrWhiteSpace(wallet2)) ?
+                           "" : $"--user {getGminerUser(wallet2)} ";
                 default:
                     return "";
             }
@@ -122,6 +138,8 @@ namespace EthminerGUI
                         "" : $"-worker {App.Configuration.LocalMachineName} ";
                 case Name.NBMiner:
                     return "";
+                case Name.GMiner:
+                    return "";
                 default:
                     return "";
             }
@@ -136,6 +154,8 @@ namespace EthminerGUI
                     return (string.IsNullOrWhiteSpace(pool2) || string.IsNullOrWhiteSpace(wallet2) || string.IsNullOrWhiteSpace(App.Configuration.LocalMachineName)) ?
                         "" : $"-worker2 {App.Configuration.LocalMachineName} ";
                 case Name.NBMiner:
+                    return "";
+                case Name.GMiner:
                     return "";
                 default:
                     return "";
@@ -152,6 +172,8 @@ namespace EthminerGUI
                     return string.IsNullOrWhiteSpace(passwd) ? "" : $"-pass {passwd.Trim()} ";
                 case Name.NBMiner:
                     return "";
+                case Name.GMiner:
+                    return string.IsNullOrWhiteSpace(passwd) ? "" : $"--pass {passwd.Trim()} ";
                 default:
                     return "";
             }
@@ -167,6 +189,9 @@ namespace EthminerGUI
                            "" : $"-pass2 {passwd2.Trim()} ";
                 case Name.NBMiner:
                     return "";
+                case Name.GMiner:
+                    return (string.IsNullOrWhiteSpace(pool2) || string.IsNullOrWhiteSpace(wallet2) || string.IsNullOrWhiteSpace(passwd2)) ?
+                            "" : $"--pass {passwd2.Trim()} ";
                 default:
                     return "";
             }
@@ -186,6 +211,10 @@ namespace EthminerGUI
                     return $"-a ethash {getPool()}{getWallet()}" +
                            $"{getPool2()}{getWallet2()}" +
                            $"--no-watchdog {args.Trim()}";
+                case Name.GMiner:
+                    return $"--algo ethash {getPool()}{getWallet()}{getPassword()}" +
+                           $"{getPool2()}{getWallet2()}{getPassword2()}" +
+                           $"--watchdog 0 {args.Trim()}";
                 default:
                     throw new Exception("不支持的挖矿内核");
             }
